@@ -41,34 +41,6 @@ static const adc_unit_t unit = ADC_UNIT_1;
 const char xOn[] = {0x11, '\0'};
 const char xOff[] = {0x13, '\0'};
 
-char* convertIntegerToChar(int N)
-{
- 
-    int m = N;
-    int digit = 0;
-    while (m) {
-        digit++;
-        m /= 10;
-    }
- 
-    char* arr;
-    char arr1[digit];
-    arr = (char*)malloc(digit);
-
-    int index = 0;
-    while (N) {
-        arr1[++index] = N % 10 + '0';
-        N /= 10;
-    }
- 
-    int i;
-    for (i = 0; i < index; i++) {
-        arr[i] = arr1[index - i];
-    }
-    arr[i] = '\0';
- 
-    return (char*)arr;
-}
 
 
 static void uart1_task(void *arg)
