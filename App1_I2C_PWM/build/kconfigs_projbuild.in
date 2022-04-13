@@ -1,0 +1,6 @@
+source "/home/zedleague/esp/esp-idf/components/app_update/Kconfig.projbuild"
+source "/home/zedleague/esp/esp-idf/components/bootloader/Kconfig.projbuild"
+source "/home/zedleague/esp/esp-idf/components/esp_rom/Kconfig.projbuild"
+source "/home/zedleague/esp/esp-idf/components/esptool_py/Kconfig.projbuild"
+source "/home/zedleague/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+source "/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/main/Kconfig.projbuild"
