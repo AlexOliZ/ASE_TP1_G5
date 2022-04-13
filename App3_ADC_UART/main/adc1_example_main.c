@@ -75,6 +75,7 @@ static void uart1_task(void *arg)
 {
     //uint8_t pointer = 0;
     uint32_t voltage;
+    uint8_t* values = (uint8_t*) malloc(sizeof(uint32_t));
     while (1) {
         uint8_t adc_reading = 0;
         //Multisampling
@@ -84,13 +85,14 @@ static void uart1_task(void *arg)
         adc_reading /= NO_OF_SAMPLES;
         //Convert adc_reading to voltage in mV
         voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
-        //pointer = (pointer+1)%(BUF_SIZE/sizeof(uint8_t));
-        const char* buff_values = convertIntegerToChar(voltage);
+        
         printf("Raw: %d\tVoltage: %dmV\n", adc_reading, voltage);
-        uart_write_bytes(UART_NUM_1, buff_values, sizeof(buff_values));
-        //const char characters[] = "HELLO UART2";
-        //uart_write_bytes(UART_NUM_1, characters, sizeof(characters));
-        //sleep for 1000 ms
+        for(int i=0; i<4; i++)
+        {
+            values[i] = voltage&(0xFF<<i);
+        }
+        uart_write_bytes(UART_NUM_1, values, sizeof(values));
+        
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
@@ -106,7 +108,11 @@ static void uart2_task(void *arg)
         ESP_ERROR_CHECK(uart_get_buffered_data_len(UART_NUM_2, (size_t*)&length));
         if(length != 0 ) {
             uart_read_bytes(UART_NUM_2, data, length, 20 / portTICK_PERIOD_MS);
-            printf("%d - UART2 received from UART1: %s\n", count, (char*)data);
+            uint32_t value = 0;
+            for(int i=0 ; i<4 ; i++){
+                value |= (data[i]&0xFF) >> (i*8);
+            }
+            printf("%d - UART2 received from UART1: %d\n", count, value);
             count++;
         }
         
