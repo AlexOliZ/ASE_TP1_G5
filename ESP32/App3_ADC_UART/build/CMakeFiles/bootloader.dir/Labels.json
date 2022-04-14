@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/CMakeFiles/bootloader"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/CMakeFiles/bootloader.rule"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/CMakeFiles/bootloader-complete.rule"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
+		},
+		{
+			"file" : "/home/zedleague/esp/esp-idf/examples/peripherals/adc/single_read/adc/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"bootloader"
+		],
+		"name" : "bootloader"
+	}
+}
