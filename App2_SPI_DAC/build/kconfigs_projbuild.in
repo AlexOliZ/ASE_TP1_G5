@@ -1,0 +1,6 @@
+source "C:/Users/rodri/esp/esp-idf/components/app_update/Kconfig.projbuild"
+source "C:/Users/rodri/esp/esp-idf/components/bootloader/Kconfig.projbuild"
+source "C:/Users/rodri/esp/esp-idf/components/esp_rom/Kconfig.projbuild"
+source "C:/Users/rodri/esp/esp-idf/components/esptool_py/Kconfig.projbuild"
+source "C:/Users/rodri/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+source "C:/Users/rodri/Documents/ASE/hd_eeprom/hd_eeprom/main/Kconfig.projbuild"
