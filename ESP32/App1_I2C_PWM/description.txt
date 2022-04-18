@@ -1,0 +1,5 @@
+The program aims to increase the LED intensity using the LEDC (pwm peripheral)
+The temperature is read using a temperature sensor with i2c
+The LED intensity is changed by increasing or decreasing the duty_cycle
+of the PWM channel connected to the LED via GPIO27.
+The temperature sensors are connected to GPIO 22 (SCL) and 21 (SDA).

@@ -1,0 +1,3 @@
+The program aims to read the voltage of the potentiometer using ADC peripheral and 
+send the measurements using UART1 and UART2
+The adc is connected to GPIO34
