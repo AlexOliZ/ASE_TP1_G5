@@ -6,17 +6,11 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include "esp_event.h"
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/queue.h"
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
-#include "driver/adc.h"
-#include "driver/dac.h"
-#include "driver/dac_common.h"
-#include "esp_system.h"
 
 #include "sdkconfig.h"
 #include "esp_log.h"
@@ -69,17 +63,6 @@
 
 static const char TAG[] = "main";
 
-void setup_init() 
-{
-   dac_output_enable(DAC_CHANNEL_1); //ativar a saida da DAC no GPIO25   
-}
- 
-void loop() 
-{  
-    int max = 255;
-    dac_output_voltage(DAC_CHANNEL_1, max);  //colocar voltagem na saída do canal DAC do GPIO25 
-    vTaskDelay(30 / portTICK_PERIOD_MS); //pequeno delay
-}
 void app_main(void)
 {
     esp_err_t ret;
@@ -135,10 +118,9 @@ void app_main(void)
     ESP_LOGI(TAG, "Read: %s", test_buf);
 
     ESP_LOGI(TAG, "Example finished.");
-    setup_init();
+
     while (1) {
         // Add your main loop handling code here.
-        loop();
         vTaskDelay(1);
     }
 }
