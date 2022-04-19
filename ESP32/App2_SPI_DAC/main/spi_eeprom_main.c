@@ -50,9 +50,6 @@ void loop() { // Generate a Sine wave
 
 void app_main(void)
 {
-
-
-
     esp_err_t ret;
 #ifndef CONFIG_EXAMPLE_USE_SPI1_PINS
     ESP_LOGI(TAG, "Initializing bus SPI%d...", EEPROM_HOST+1);
