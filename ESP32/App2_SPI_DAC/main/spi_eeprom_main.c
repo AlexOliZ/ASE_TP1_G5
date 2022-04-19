@@ -1,7 +1,5 @@
 /* SPI Master Half Duplex EEPROM example.
-
    This example code is in the Public Domain (or CC0 licensed, at your option.)
-
    Unless required by applicable law or agreed to in writing, this
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
@@ -24,30 +22,64 @@
 #include "esp_log.h"
 #include "spi_eeprom.h"
 
+
+/*
+ This code demonstrates how to use the SPI master half duplex mode to read/write a AT932C46D EEPROM (8-bit mode).
+*/
+
 #ifdef CONFIG_IDF_TARGET_ESP32
-#   define SPI_HOST     VSPI_HOST
-#   define PIN_NUM_MISO 19
-#   define PIN_NUM_MOSI 23
-#   define PIN_NUM_CLK  18
-#   define PIN_NUM_CS   5
+#  ifdef CONFIG_EXAMPLE_USE_SPI1_PINS
+#    define EEPROM_HOST    SPI1_HOST
+// Use default pins, same as the flash chip.
+#    define PIN_NUM_MISO 7
+#    define PIN_NUM_MOSI 8
+#    define PIN_NUM_CLK  6
+#  else
+#    define EEPROM_HOST    HSPI_HOST
+#    define PIN_NUM_MISO 18
+#    define PIN_NUM_MOSI 23
+#    define PIN_NUM_CLK  19
+#  endif
+
+#  define PIN_NUM_CS   13
+#elif defined CONFIG_IDF_TARGET_ESP32S2
+#  define EEPROM_HOST    SPI2_HOST
+
+#  define PIN_NUM_MISO 37
+#  define PIN_NUM_MOSI 35
+#  define PIN_NUM_CLK  36
+#  define PIN_NUM_CS   34
+#elif defined CONFIG_IDF_TARGET_ESP32C3
+#  define EEPROM_HOST    SPI2_HOST
+
+#  define PIN_NUM_MISO 2
+#  define PIN_NUM_MOSI 7
+#  define PIN_NUM_CLK  6
+#  define PIN_NUM_CS   10
+
+#elif CONFIG_IDF_TARGET_ESP32S3
+#  define EEPROM_HOST    SPI2_HOST
+
+#  define PIN_NUM_MISO 13
+#  define PIN_NUM_MOSI 11
+#  define PIN_NUM_CLK  12
+#  define PIN_NUM_CS   10
 #endif
 
-#define DAC1 25
 
 static const char TAG[] = "main";
 
 void setup_init() 
 {
-    Serial.begin(115200);
+   dac_output_enable(DAC_CHANNEL_1); //ativar a saida da DAC no GPIO25   
 }
  
-void loop() { // Generate a Sine wave
-  int Value = 255; //255= 3.3V 128=1.65V
-  
-  dacWrite(DAC1, Value);
-  delay(1000);
+void loop() 
+{  
+    int max = 255;
+    dac_output_voltage(DAC_CHANNEL_1, max);  //colocar voltagem na saída do canal DAC do GPIO25 
+    vTaskDelay(30 / portTICK_PERIOD_MS); //pequeno delay
 }
-
 void app_main(void)
 {
     esp_err_t ret;
@@ -87,7 +119,7 @@ void app_main(void)
     ret = spi_eeprom_write_enable(eeprom_handle);
     ESP_ERROR_CHECK(ret);
 
-    const char test_str[] = "APP2_SPI_DAC";
+    const char test_str[] = "Hello World!";
     ESP_LOGI(TAG, "Write: %s", test_str);
     for (int i = 0; i < sizeof(test_str); i++) {
         // No need for this EEPROM to erase before write.
@@ -102,13 +134,11 @@ void app_main(void)
     }
     ESP_LOGI(TAG, "Read: %s", test_buf);
 
-    ESP_LOGI(TAG, "Example finished. DAC now...");
+    ESP_LOGI(TAG, "Example finished.");
     setup_init();
-     while (1) {
+    while (1) {
         // Add your main loop handling code here.
         loop();
         vTaskDelay(1);
     }
 }
-
-
