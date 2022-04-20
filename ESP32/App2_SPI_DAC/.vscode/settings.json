@@ -6,7 +6,8 @@
     ],
     "idf.portWin": "COM5",
     "files.associations": {
-        "spi_eeprom.h": "c"
+        "spi_eeprom.h": "c",
+        "sdkconfig.h": "c"
     },
     "idf.flashType": "JTAG"
 }
