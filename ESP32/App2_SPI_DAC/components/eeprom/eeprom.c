@@ -10,17 +10,17 @@
 
 #define TAG "EEPROM"
 
-#define EEPROM_HOST HSPI_HOST
+#define EEPROM_HOST VSPI_HOST
+
+#define GPIO_CS		5
+#define GPIO_MISO	19
+#define GPIO_MOSI	23
+#define GPIO_SCLK	18
 
 // Initialize devive
 
 void spi_master_init(EEPROM_t * dev)
-{
-	int GPIO_CS = 12;
-	int GPIO_MISO = 14;
-	int GPIO_MOSI = 15;
-	int GPIO_SCLK = 13;
-	 
+{	 
 	esp_err_t ret;
 
 	ESP_LOGI(TAG, "GPIO_MISO=%d",GPIO_MISO);
@@ -28,9 +28,9 @@ void spi_master_init(EEPROM_t * dev)
 	ESP_LOGI(TAG, "GPIO_SCLK=%d",GPIO_SCLK);
 	ESP_LOGI(TAG, "GPIO_CS=%d",GPIO_CS);
 	//gpio_pad_select_gpio( GPIO_CS );
-	gpio_reset_pin( GPIO_CS );
-	gpio_set_direction( GPIO_CS, GPIO_MODE_OUTPUT );
-	gpio_set_level( GPIO_CS, 0 );
+	gpio_reset_pin(GPIO_CS);
+	gpio_set_direction(GPIO_CS, GPIO_MODE_OUTPUT);
+	gpio_set_level(GPIO_CS, 0);
 
 	spi_bus_config_t buscfg = {
 		.sclk_io_num = GPIO_SCLK,
@@ -41,27 +41,26 @@ void spi_master_init(EEPROM_t * dev)
 	};
 
 	ret = spi_bus_initialize( EEPROM_HOST, &buscfg, SPI_DMA_CH_AUTO );
-	ESP_LOGD(TAG, "spi_bus_initialize=%d",ret);
-	assert(ret==ESP_OK);
+	ESP_LOGI(TAG, "spi_bus_initialize=%d",ret);
+	ESP_ERROR_CHECK(ret);
 
 	int SPI_Frequency = SPI_MASTER_FREQ_8M;
 	dev->_totalBytes = 512;
 	dev->_addressBits = 9;
-	dev->_pageSize = 16;
-	dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	//dev->_pageSize = 16;
+	//dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
 
-
-	spi_device_interface_config_t devcfg;
-	memset( &devcfg, 0, sizeof( spi_device_interface_config_t ) );
-	devcfg.clock_speed_hz = SPI_Frequency;
-	devcfg.spics_io_num = GPIO_CS;
-	devcfg.queue_size = 1;
-	devcfg.mode = 0;
-
+	spi_device_interface_config_t devcfg = {
+		.clock_speed_hz = SPI_Frequency,
+		.spics_io_num = GPIO_CS,
+		.queue_size = 1,
+		.mode = 0,
+	};
 	spi_device_handle_t handle;
 	ret = spi_bus_add_device( EEPROM_HOST, &devcfg, &handle);
-	ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
-	assert(ret==ESP_OK);
+	ESP_LOGI(TAG, "spi_bus_add_device=%d",ret);
+	ESP_ERROR_CHECK(ret);
+	
 	dev->_SPIHandle = handle;
 }
 
@@ -71,17 +70,17 @@ void spi_master_init(EEPROM_t * dev)
 //
 esp_err_t eeprom_ReadStatusReg(EEPROM_t * dev, uint8_t * reg)
 {
-	spi_transaction_t SPITransaction;
-	uint8_t data[2];
-	data[0] = EEPROM_CMD_RDSR;
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = 2 * 8;
-	SPITransaction.tx_buffer = data;
-	SPITransaction.rx_buffer = data;
-	esp_err_t ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK);
-	ESP_LOGD(TAG, "eeprom_ReadStatusReg=%x",data[1]);
-	*reg = data[1];
+	
+	uint8_t data[1];
+	spi_transaction_t SPITransaction = {
+		.cmd = EEPROM_CMD_RDSR,
+		.length = 2 * 8,
+		.rx_buffer = data,
+	};
+	esp_err_t ret = spi_device_transmit(dev->_SPIHandle, &SPITransaction);
+	ESP_ERROR_CHECK(ret);
+	ESP_LOGI(TAG, "eeprom_ReadStatusReg=%x",data[0]);
+	*reg = data[0];
 	return ret;
 }
 
@@ -92,17 +91,16 @@ esp_err_t eeprom_ReadStatusReg(EEPROM_t * dev, uint8_t * reg)
 //
 bool eeprom_IsBusy(EEPROM_t * dev)
 {
-	spi_transaction_t SPITransaction;
-	uint8_t data[2];
-	data[0] = EEPROM_CMD_RDSR;
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = 2 * 8;
-	SPITransaction.tx_buffer = data;
-	SPITransaction.rx_buffer = data;
+	uint8_t data[1];
+	spi_transaction_t SPITransaction = {
+		.cmd = EEPROM_CMD_RDSR,
+		.length = 2 * 8,
+		.rx_buffer = data,
+	};
 	esp_err_t ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK);
+	ESP_ERROR_CHECK(ret);
 	if (ret != ESP_OK) return false;
-	if( (data[1] & EEPROM_STATUS_WIP) == EEPROM_STATUS_WIP) return true;
+	if( (data[0] & EEPROM_STATUS_WIP) == EEPROM_STATUS_WIP) return true;
 	return false;
 }
 
@@ -114,17 +112,16 @@ bool eeprom_IsBusy(EEPROM_t * dev)
 //
 bool eeprom_IsWriteEnable(EEPROM_t * dev)
 {
-	spi_transaction_t SPITransaction;
-	uint8_t data[2];
-	data[0] = EEPROM_CMD_RDSR;
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = 2 * 8;
-	SPITransaction.tx_buffer = data;
-	SPITransaction.rx_buffer = data;
+	uint8_t data[0];
+	spi_transaction_t SPITransaction = {
+		.cmd = EEPROM_CMD_RDSR,
+		.length = 2 * 8,
+		.rx_buffer = data,
+	};
 	esp_err_t ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK);
+	ESP_ERROR_CHECK(ret);
 	if (ret != ESP_OK) return false;
-	if( (data[1] & EEPROM_STATUS_WEL) == EEPROM_STATUS_WEL) return true;
+	if( (data[0] & EEPROM_STATUS_WEL) == EEPROM_STATUS_WEL) return true;
 	return false;
 }
 
@@ -133,15 +130,14 @@ bool eeprom_IsWriteEnable(EEPROM_t * dev)
 //
 esp_err_t eeprom_WriteEnable(EEPROM_t * dev)
 {
-	spi_transaction_t SPITransaction;
 	uint8_t data[1];
 	data[0] = EEPROM_CMD_WREN;
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = 1 * 8;
-	SPITransaction.tx_buffer = data;
-	SPITransaction.rx_buffer = data;
+	spi_transaction_t SPITransaction = {
+		.length = 1 * 8,
+		.tx_buffer = data,
+	};
 	esp_err_t ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK);
+	ESP_ERROR_CHECK(ret);
 	return ret;
 }
 
@@ -150,17 +146,17 @@ esp_err_t eeprom_WriteEnable(EEPROM_t * dev)
 //
 esp_err_t eeprom_WriteDisable(EEPROM_t * dev)
 {
-	spi_transaction_t SPITransaction;
 	uint8_t data[1];
 	data[0] = EEPROM_CMD_WRDI;
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = 1 * 8;
-	SPITransaction.tx_buffer = data;
-	SPITransaction.rx_buffer = data;
+	spi_transaction_t SPITransaction = {
+		.length = 1 * 8,
+		.tx_buffer = data,
+	};
 	esp_err_t ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK);
+	ESP_ERROR_CHECK(ret);
 	return ret;
 }
+
 //
 // Read from Memory Array (READ)
 // addr(in):Read start address (16-Bit Address)
@@ -170,31 +166,30 @@ esp_err_t eeprom_WriteDisable(EEPROM_t * dev)
 int16_t eeprom_Read(EEPROM_t * dev, uint16_t addr, uint8_t *buf, int16_t n)
 { 
 	esp_err_t ret;
-	spi_transaction_t SPITransaction;
 
 	if (addr >= dev->_totalBytes) return 0;
 
-	uint8_t data[4];
-	int16_t index = 0;
+	uint8_t data[3];
 	for (int i=0;i<n;i++) {
 		uint16_t _addr = addr + i;
+		
 		data[0] = EEPROM_CMD_READ;
-		if (dev->_addressBits == 9 && addr > 0xff) data[0] = data[0] | 0x08;
-		if (dev->_addressBits <= 9) {
-			data[1] = (_addr & 0xFF);
-			index = 2;
-		} else {
-			data[1] = (_addr>>8) & 0xFF;
-			data[2] = _addr & 0xFF;
-			index = 3;
+		if(addr>0xFF){
+			data[0] = (data[0] | 0x08);
 		}
-		memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-		SPITransaction.length = (index+1) * 8;
-		SPITransaction.tx_buffer = data;
-		SPITransaction.rx_buffer = data;
+		data[1] = (_addr & 0xFF);
+		spi_transaction_t SPITransaction = {
+			// .cmd = command,
+			// .addr = (addr & 0xFF),
+			.length = 3 * 8,
+			.tx_buffer = data,
+			.rx_buffer = data,
+		};
+
 		ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
+		ESP_ERROR_CHECK(ret);
 		if (ret != ESP_OK) return 0;
-		buf[i] = data[index];
+		buf[i] = data[2];
 	}
 	return n;
 }
@@ -207,40 +202,35 @@ int16_t eeprom_Read(EEPROM_t * dev, uint16_t addr, uint8_t *buf, int16_t n)
 int16_t eeprom_WriteByte(EEPROM_t * dev, uint16_t addr, uint8_t wdata)
 {
 	esp_err_t ret;
-	spi_transaction_t SPITransaction;
 
 	if (addr >= dev->_totalBytes) return 0;
 
 	// Set write enable
 	ret = eeprom_WriteEnable(dev);
+	ESP_ERROR_CHECK(ret);
 	if (ret != ESP_OK) return 0;
 
 	// Wait for idle
 	while( eeprom_IsBusy(dev) ) {
 		vTaskDelay(1);
 	}
-
-	uint8_t data[4];
-	int16_t index = 0;
+	
+	uint8_t data[3];
 	data[0] = EEPROM_CMD_WRITE;
-	if (dev->_addressBits == 9 && addr > 0xff) data[0] = data[0] | 0x08;
-	if (dev->_addressBits <= 9) {
-		data[1] = (addr & 0xFF);
-		data[2] = wdata;
-		index = 2;
-	} else {
-		data[1] = (addr>>8) & 0xFF;
-		data[2] = addr & 0xFF;
-		data[3] = wdata;
-		index = 3;
+	if(addr>0xFF){
+		data[0] = (data[0] | 0x08);
 	}
-
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = (index+1) * 8;
-	SPITransaction.tx_buffer = data;
-	SPITransaction.rx_buffer = data;
+	data[1] = (addr & 0xFF);
+	data[2] = wdata;
+	spi_transaction_t SPITransaction = {
+		// .cmd = command,
+		// .addr = (addr & 0xFF),
+		.length = 3 * 8,
+		.tx_buffer = data,
+	};
+	
 	ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK);
+	ESP_ERROR_CHECK(ret);
 	if (ret != ESP_OK) return 0;
 
 	// Wait for idle
@@ -249,6 +239,7 @@ int16_t eeprom_WriteByte(EEPROM_t * dev, uint16_t addr, uint8_t wdata)
 	}
 	return 1;
 }
+
 // Get total byte
 //
 int32_t eeprom_TotalBytes(EEPROM_t * dev)
@@ -258,14 +249,14 @@ int32_t eeprom_TotalBytes(EEPROM_t * dev)
 
 // Get page size
 //
-int16_t eeprom_PageSize(EEPROM_t * dev)
-{
-	return dev->_pageSize;
-}
+// int16_t eeprom_PageSize(EEPROM_t * dev)
+// {
+// 	return dev->_pageSize;
+// }
 
 // Get last page
 //
-int16_t eeprom_LastPage(EEPROM_t * dev)
-{
-	return dev->_lastPage;
-}
+// int16_t eeprom_LastPage(EEPROM_t * dev)
+// {
+// 	return dev->_lastPage;
+// }

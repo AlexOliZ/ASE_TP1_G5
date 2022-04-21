@@ -1,2 +1,11 @@
 The program aims to configure and use SPI blocks to read and write data to addresses with incremented value from address to address.
 At the same time that the data is also used for DAC with different voltage.
+SPI 
+_________________
+| GPIO_CS	5    |
+| GPIO_MISO	19   |
+| GPIO_MOSI	23   |
+| GPIO_SCLK	18   |
+_________________
+
+DAC no GPIO25

@@ -17,7 +17,7 @@
 
 static const char *TAG = "MAIN";
 
-#define	EEPROM_MODEL LC040A
+#define	EEPROM_MODEL "24LC040A"
 
 void dump(uint8_t *dt, int n)
 {
@@ -47,15 +47,11 @@ void dump(uint8_t *dt, int n)
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "EEPROM_MODEL=%s", "24LC040A");
+    ESP_LOGI(TAG, "EEPROM_MODEL=%s", EEPROM_MODEL);
 	EEPROM_t dev;
 	spi_master_init(&dev);
 	int32_t totalBytes = eeprom_TotalBytes(&dev);
 	ESP_LOGI(TAG, "totalBytes=%d Bytes",totalBytes);
-	int16_t pageSize = eeprom_PageSize(&dev);
-	ESP_LOGI(TAG, "pageSize=%d Bytes",pageSize);
-	int16_t lastPage = eeprom_LastPage(&dev);
-	ESP_LOGI(TAG, "lastPage=%d Page",lastPage);
 
 	// Get Status Register
 	uint8_t reg;
@@ -80,7 +76,7 @@ void app_main(void)
 
 	for (int addr=0; addr<128;addr++) {
 		len =  eeprom_WriteByte(&dev, addr, wdata[addr]);
-		ESP_LOGI(TAG, "WriteByte(addr=%d) len=%d", addr, len);
+		ESP_LOGI(TAG, "WriteByte(addr=%d) len=%d: data=%d", addr, len, wdata[addr]);
 		if (len != 1) {
 			ESP_LOGI(TAG, "WriteByte Fail addr=%d", addr);
 			while(1) { vTaskDelay(1); }
