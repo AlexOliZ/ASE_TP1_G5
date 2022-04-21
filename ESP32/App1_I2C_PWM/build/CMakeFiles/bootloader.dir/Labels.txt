@@ -1,13 +1,13 @@
 # Target labels
  bootloader
 # Source files and their labels
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/CMakeFiles/bootloader
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/CMakeFiles/bootloader.rule
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/CMakeFiles/bootloader-complete.rule
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
-/home/zedleague/esp/esp-idf/examples/peripherals/i2c/i2c_simple/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/CMakeFiles/bootloader
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/CMakeFiles/bootloader.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/CMakeFiles/bootloader-complete.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/home/zedleague/esp/esp-idf/examples/ESP32/App1_I2C_PWM/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule

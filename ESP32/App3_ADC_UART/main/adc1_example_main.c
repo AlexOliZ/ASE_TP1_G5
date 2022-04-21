@@ -13,6 +13,11 @@
 #include "driver/gpio.h"
 
 
+#include "esp_check.h"
+#include "esp_sleep.h"
+#define TIMER_WAKEUP_TIME_US    (2 * 1000 * 1000)
+
+
 #define DEFAULT_VREF    1100        //Use adc2_vref_to_gpio() to obtain a better estimate
 #define NO_OF_SAMPLES   64          //Multisampling
 
@@ -24,7 +29,7 @@
 
 #define TURN_OFF_GPIO     (36)
 
-
+static const char *TAG = "ADC_UART";
 static esp_adc_cal_characteristics_t *adc_chars;
 static const adc_channel_t channel = ADC_CHANNEL_6;     //GPIO34 if ADC1, GPIO14 if ADC2
 static const adc_bits_width_t width = ADC_WIDTH_BIT_12;
@@ -34,7 +39,12 @@ static const adc_unit_t unit = ADC_UNIT_1;
 const char xOn[] = {0x11, '\0'};
 const char xOff[] = {0x13, '\0'};
 
-
+esp_err_t example_register_timer_wakeup(void)
+{
+    ESP_RETURN_ON_ERROR(esp_sleep_enable_timer_wakeup(TIMER_WAKEUP_TIME_US), TAG, "Configure timer as wakeup source failed");
+    ESP_LOGI(TAG, "timer wakeup source is ready");
+    return ESP_OK;
+}
 
 static void uart1_task(void *arg)
 {
@@ -45,7 +55,7 @@ static void uart1_task(void *arg)
         uint8_t adc_reading = 0;
         //Multisampling
         for (int i = 0; i < NO_OF_SAMPLES; i++) {
-            adc_reading += adc1_get_raw((adc1_channel_t)channel);
+            adc_reading += adc1_get_raw((adc_channel_t)channel);
         }
         adc_reading /= NO_OF_SAMPLES;
         //Convert adc_reading to voltage in mV
@@ -58,6 +68,7 @@ static void uart1_task(void *arg)
         }
         uart_write_bytes(UART_NUM_1, values, sizeof(values));
         
+        esp_light_sleep_start();
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
@@ -134,6 +145,8 @@ static void print_char_val_type(esp_adc_cal_value_t val_type)
 
 void app_main(void)
 {
+    example_register_timer_wakeup();
+
     /* Configure parameters of an UART driver,
      * communication pins and install the driver */
     uart_config_t uart_config = {
