@@ -5,10 +5,15 @@
 #include "freertos/task.h"
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
-
 #include "sdkconfig.h"
 #include "esp_log.h"
 #include "eeprom.h"
+#include "esp_event.h"
+#include "freertos/queue.h"
+#include "driver/adc.h"
+#include "driver/dac.h"
+#include "driver/dac_common.h"
+#include "esp_system.h"
 
 static const char *TAG = "MAIN";
 
@@ -64,10 +69,13 @@ void app_main(void)
 
 	uint8_t wdata[128];
 	int len;
-	
-    //write all bits 1
+	dac_output_enable(DAC_CHANNEL_1);
+
+    //write increase
     for (int i=0; i<128; i++) {
-		wdata[i]=0xff;	
+		wdata[i]=i;	
+		dac_output_voltage(DAC_CHANNEL_1, i);
+		vTaskDelay(30 / portTICK_PERIOD_MS); 
 	}  
 
 	for (int addr=0; addr<128;addr++) {
