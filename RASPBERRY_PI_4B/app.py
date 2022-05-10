@@ -1,13 +1,13 @@
-import pyautogui as pygu #To move mouse cursor and make click and keyboard strokes
-from time import sleep #for delay
-import pyperclip #to copy and past data
-import webbrowser #to open webbrowser
-import os #to close webbrowser
-import RPi.GPIO as IO            # calling header file for GPIO’s of PI
-import time                              # calling for time to provide delays in program
+import pyautogui as pygu    #To move mouse cursor and make click and keyboard strokes
+from time import sleep      #for delay
+import pyperclip            #to copy and past data
+import webbrowser           #to open webbrowser
+import os                   #to close webbrowser
+import RPi.GPIO as IO       # calling header file for GPIO’s of PI
+import time                 # calling for time to provide delays in program
 
 IO.setmode (IO.BOARD)       # programming the GPIO by BOARD pin numbers, GPIO21 is called as PIN40
-IO.setup(40,IO.OUT)             # initialize digital pin40 as an output.
+IO.setup(40,IO.OUT)         # initialize digital pin40 as an output.
 
 #Open the default webbrowser and open web.whastapp
 webbrowser.open_new('https://web.whatsapp.com/')
@@ -79,6 +79,8 @@ def get_response(incoming_message):
     if "turn off light" in incoming_message:
         IO.output(40,0)                      # turn the LED off
         return turn_off_light
+    if "temperature" in incoming_message:
+        IO.output()
     else:
         return ""
 
@@ -109,3 +111,5 @@ while(1):
 
         message_content = get_response(incoming_message) #decide what to respond to that message
         send_message(message_content) #send the message to person
+
+# https://circuitdigest.com/microcontroller-projects/whatsapp-automation-using-python-on-raspberry-pi-a-personalized-whatsapp-bot-for-home-automation
