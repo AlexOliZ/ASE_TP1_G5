@@ -5,6 +5,7 @@ import webbrowser           #to open webbrowser
 import os                   #to close webbrowser
 import RPi.GPIO as IO       # calling header file for GPIO’s of PI
 import time                 # calling for time to provide delays in program
+import glob
 
 IO.setmode (IO.BOARD)       # programming the GPIO by BOARD pin numbers, GPIO21 is called as PIN40
 IO.setup(40,IO.OUT)         # initialize digital pin40 as an output.
@@ -22,8 +23,16 @@ turn_on_light = [
 ]
 
 turn_off_light = [
-    "Okay, Your LED is not turned off"
+    "Okay, Your LED is turned off"
 ]
+
+
+os.system('modprobe w1-gpio')
+os.system('modprobe w1-therm')
+ 
+base_dir = '/sys/bus/w1/devices/'
+device_folder = glob.glob(base_dir + '28*')[0]
+device_file = device_folder + '/w1_slave'
 
 #Wait for whatsapp page to
 def open_whatsapp():
@@ -80,7 +89,7 @@ def get_response(incoming_message):
         IO.output(40,0)                      # turn the LED off
         return turn_off_light
     if "temperature" in incoming_message:
-        IO.output()
+        return "Okay, your temperature is " + read_temp()
     else:
         return ""
 
@@ -99,6 +108,24 @@ def new_message_available():
         return 1
     else:
         return 0
+
+def read_temp_raw():
+    f = open(device_file, 'r')
+    lines = f.readlines()
+    f.close()
+    return lines
+ 
+def read_temp():
+    lines = read_temp_raw()
+    while lines[0].strip()[-3:] != 'YES':
+        time.sleep(0.2)
+        lines = read_temp_raw()
+    equals_pos = lines[1].find('t=')
+    if equals_pos != -1:
+        temp_string = lines[1][equals_pos+2:]
+        temp_c = float(temp_string) / 1000.0
+        temp_f = temp_c * 9.0 / 5.0 + 32.0
+        return temp_c, temp_f
 
 if (open_whatsapp()): #if whatsapp page is opened successfully
     print("##Whatsapp page ready for automation##")
