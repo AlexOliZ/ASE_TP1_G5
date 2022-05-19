@@ -5,13 +5,13 @@ import discord
 from discord.ext import commands
 import RPi.GPIO as io
 
-#Public Key -> '7dce84a70d3519d026a531bd1ce10473f8dc624723a15bb62e46d1d9217b2eec'
+
 
 i2c_ch = 1
 i2c_addr = 0x4d
 reg_temp = 0x00
 
-led = 18
+led = 5
 io.setmode(io.BOARD)
 io.setwarnings(False)
 io.setup(led,io.OUT)
@@ -34,10 +34,12 @@ async def led_off(ctx):
     io.output(led,0)
     await ctx.send("LED is Off")
 
+
 @bot.command()
 async def temperature(ctx):
     io.output(led,0)
     await ctx.send("Temperature is: ",str(round(get_temperature(),2)))
+
 
 # Calculate the 2's complement of a number
 def twos_comp(val, bits):
@@ -60,9 +62,8 @@ def get_temperature():
 
     return temp_c
 
-
 # Initialize I2C (SMBus)
 bus = smbus.SMBus(i2c_ch)
 
-bot.run("7dce84a70d3519d026a531bd1ce10473f8dc624723a15bb62e46d1d9217b2eec")
+bot.run("OTc2MDY1OTI1NzMwMTU2NTc0.GFdhg_.c61baGXZV8KiVEnxGTzbLlvFufLJG-x2d9rEuU")
 
