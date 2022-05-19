@@ -11,7 +11,7 @@ i2c_ch = 1
 i2c_addr = 0x4d
 reg_temp = 0x00
 
-led = 5
+led = 18
 io.setmode(io.BOARD)
 io.setwarnings(False)
 io.setup(led,io.OUT)
