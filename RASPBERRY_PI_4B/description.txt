@@ -1,0 +1,2 @@
+This project was developed using the Raspberry Pi model B and aims to create a Discord bot that does some tasks according to what the user asks. These tasks are: turn on the led, turn off the led and read the temperature value read by the TC74 sensor.
+Communication with the sensor is done by I2C. We have connections made between the board and the raspberry pi through the GPIO's intended for both the sensor and the leds.

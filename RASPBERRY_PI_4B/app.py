@@ -12,10 +12,13 @@ i2c_addr = 0x4d
 reg_temp = 0x00
 
 led = 18
-io.setmode(io.BOARD)
+io.setmode(io.BCM)
 io.setwarnings(False)
 io.setup(led,io.OUT)
-io.output(led,0)
+io.output(led,io.LOW)
+
+# Initialize I2C (SMBus)
+bus = smbus.SMBus(i2c_ch)
 
 bot = commands.Bot(command_prefix="/")
 
@@ -26,18 +29,17 @@ async def on_ready():
       
 @bot.command()
 async def led_on(ctx):
-    io.output(led,1)
+    io.output(led,io.HIGH)
     await ctx.send("LED is On")
     
 @bot.command()
 async def led_off(ctx):
-    io.output(led,0)
+    io.output(led,io.LOW)
     await ctx.send("LED is Off")
 
 
 @bot.command()
 async def temperature(ctx):
-    io.output(led,0)
     await ctx.send("Temperature is: ",str(round(get_temperature(),2)))
 
 
@@ -62,8 +64,6 @@ def get_temperature():
 
     return temp_c
 
-# Initialize I2C (SMBus)
-bus = smbus.SMBus(i2c_ch)
 
 bot.run("OTc2MDY1OTI1NzMwMTU2NTc0.GFdhg_.c61baGXZV8KiVEnxGTzbLlvFufLJG-x2d9rEuU")
 
