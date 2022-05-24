@@ -1,0 +1,9 @@
+1- Navigate to the https://discord.com/developers/applications.
+2- Click on the "New Application" button.
+3- Give the application a name and click "Create".
+4- Create a Bot User by navigating to the "Bot" tab and clicking "Add Bot".
+5- Copy the token.
+6- Go to the "OAuth2" tab.
+7- tick the "bot" checkbox under "scopes".
+8- choose bot permissions.
+9- Create the bot, copy and paste the given URL and select the server's you want to add the bot to.
